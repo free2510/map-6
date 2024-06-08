@@ -51,13 +51,15 @@
         }
 
         // Function to fetch data from a specified URL
-        function fetchData(url) {
+        function fetchData(url, category) {
             fetch(url)
                 .then(response => response.json())
                 .then(data => {
-                    // Convert object keys to array of objects
-                    const dataArray = Object.keys(data).map(key => data[key]);
-                    initializeMap(dataArray);
+                    if (category && data[category]) {
+                        initializeMap(data[category]);
+                    } else {
+                        console.error('Invalid category or data structure.');
+                    }
                 })
                 .catch(error => console.error('Error fetching data:', error));
         }
@@ -65,9 +67,10 @@
         // Extracting URL parameters
         const urlParams = new URLSearchParams(window.location.search);
         const firebaseurl = urlParams.get('firebaseurl');
+        const category = urlParams.get('category');
 
         if (firebaseurl) {
-            fetchData(firebaseurl);
+            fetchData(firebaseurl, category);
         } else {
             console.error('Firebase URL is required as a parameter.');
         }
