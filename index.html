@@ -40,14 +40,16 @@
             // Adding markers to the map
             Object.keys(data).forEach(function(key) {
                 var spot = data[key];
-                var marker = new mapboxgl.Marker()
-                    .setLngLat([spot.longitude, spot.latitude])
-                    .addTo(map);
+                if (spot.occupied !== 0) {
+                    var marker = new mapboxgl.Marker()
+                        .setLngLat([spot.longitude, spot.latitude])
+                        .addTo(map);
 
-                var popup = new mapboxgl.Popup({ offset: 25 })
-                    .setHTML('<div class="marker-title">' + spot.name + '</div>');
+                    var popup = new mapboxgl.Popup({ offset: 25 })
+                        .setHTML('<div class="marker-title">' + spot.name + '</div>');
 
-                marker.setPopup(popup);
+                    marker.setPopup(popup);
+                }
             });
         }
 
