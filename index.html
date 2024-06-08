@@ -25,7 +25,7 @@
 
         // Function to initialize the map with given data
         function initializeMap(data) {
-            if (!data || Object.keys(data).length === 0) {
+            if (!data || (Array.isArray(data) && data.length === 0) || (Object.keys(data).length === 0)) {
                 console.error('No data available to display on the map.');
                 return;
             }
@@ -38,7 +38,19 @@
             });
 
             // Adding markers to the map
-            data.forEach(function(item) {
+            if (Array.isArray(data)) {
+                data.forEach(function(item) {
+                    addMarker(item);
+                });
+            } else {
+                Object.keys(data).forEach(function(category) {
+                    data[category].forEach(function(item) {
+                        addMarker(item);
+                    });
+                });
+            }
+
+            function addMarker(item) {
                 var marker = new mapboxgl.Marker()
                     .setLngLat([item.longitude, item.latitude])
                     .addTo(map);
@@ -47,7 +59,7 @@
                     .setHTML('<div class="marker-title">' + item.name + '</div>');
 
                 marker.setPopup(popup);
-            });
+            }
         }
 
         // Function to fetch data from a specified URL and category
@@ -55,26 +67,7 @@
             fetch(url)
                 .then(response => response.json())
                 .then(data => {
-                    let processedData = [];
-
-                    // Check if data is in the first format
-                    if (Array.isArray(data)) {
-                        processedData = data;
-                    } else if (typeof data === 'object') {
-                        // Check if data is in the second format with categories
-                        if (category && data[category]) {
-                            processedData = data[category];
-                        } else {
-                            // If no category specified, concatenate all nested arrays
-                            Object.keys(data).forEach(key => {
-                                if (Array.isArray(data[key])) {
-                                    processedData = processedData.concat(data[key]);
-                                }
-                            });
-                        }
-                    }
-
-                    initializeMap(processedData);
+                    initializeMap(data);
                 })
                 .catch(error => console.error('Error fetching data:', error));
         }
