@@ -25,7 +25,7 @@
 
         // Function to initialize the map with given data
         function initializeMap(data) {
-            if (!data || (Array.isArray(data) && data.length === 0) || (Object.keys(data).length === 0)) {
+            if (!data || Object.keys(data).length === 0) {
                 console.error('No data available to display on the map.');
                 return;
             }
@@ -33,57 +33,44 @@
             var map = new mapboxgl.Map({
                 container: 'map',
                 style: 'mapbox://styles/mapbox/satellite-v9',
-                center: [data[0].longitude, data[0].latitude],
+                center: [Object.values(data)[0].longitude, Object.values(data)[0].latitude],
                 zoom: 10
             });
 
             // Adding markers to the map
-            if (Array.isArray(data)) {
-                data.forEach(function(item) {
-                    addMarker(item);
-                });
-            } else {
-                Object.keys(data).forEach(function(category) {
-                    data[category].forEach(function(item) {
+            Object.keys(data).forEach(function(key) {
+                if (Array.isArray(data[key])) {
+                    data[key].forEach(function(item) {
                         addMarker(item);
                     });
-                });
-            }
+                } else {
+                    addMarker(data[key]);
+                }
+            });
 
             function addMarker(item) {
+                if (!item.latitude || !item.longitude) {
+                    console.error('Invalid data - latitude or longitude missing.');
+                    return;
+                }
+
                 var marker = new mapboxgl.Marker()
                     .setLngLat([item.longitude, item.latitude])
                     .addTo(map);
 
                 var popup = new mapboxgl.Popup({ offset: 25 })
-                    .setHTML('<div class="marker-title">' + item.name + '</div>');
+                    .setHTML('<div class="marker-title">' + (item.name || '') + '</div>');
 
                 marker.setPopup(popup);
             }
         }
 
         // Function to fetch data from a specified URL
-        function fetchData(url, category) {
+        function fetchData(url) {
             fetch(url)
                 .then(response => response.json())
                 .then(data => {
-                    // Check if data is in the first format
-                    if (Array.isArray(data)) {
-                        initializeMap(data);
-                    } else if (typeof data === 'object') {
-                        // Check if data is in the second format with categories
-                        if (data.locations) {
-                            if (category && data.locations[category]) {
-                                initializeMap(data.locations[category]);
-                            } else {
-                                console.error('Invalid category or data structure.');
-                            }
-                        } else {
-                            console.error('Invalid data structure.');
-                        }
-                    } else {
-                        console.error('Invalid data.');
-                    }
+                    initializeMap(data);
                 })
                 .catch(error => console.error('Error fetching data:', error));
         }
@@ -91,10 +78,9 @@
         // Extracting URL parameters
         const urlParams = new URLSearchParams(window.location.search);
         const firebaseurl = urlParams.get('firebaseurl');
-        const category = urlParams.get('category');
 
         if (firebaseurl) {
-            fetchData(firebaseurl, category);
+            fetchData(firebaseurl);
         } else {
             console.error('Firebase URL is required as a parameter.');
         }
