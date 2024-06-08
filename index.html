@@ -66,11 +66,19 @@
         }
 
         // Function to fetch data from a specified URL
-        function fetchData(url) {
+        function fetchData(url, category) {
             fetch(url)
                 .then(response => response.json())
                 .then(data => {
-                    initializeMap(data);
+                    if (category) {
+                        if (data[category]) {
+                            initializeMap(data[category]);
+                        } else {
+                            console.error('Category not found in data.');
+                        }
+                    } else {
+                        initializeMap(data);
+                    }
                 })
                 .catch(error => console.error('Error fetching data:', error));
         }
@@ -81,7 +89,7 @@
         const category = urlParams.get('category');
 
         if (firebaseurl) {
-            fetchData(firebaseurl);
+            fetchData(firebaseurl, category);
         } else {
             console.error('Firebase URL is required as a parameter.');
         }
