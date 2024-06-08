@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Dynamic Data Map</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.8.1/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.8.1/mapbox-gl.css" rel="stylesheet" />
+    <style>
+        body { margin: 0; padding: 0; }
+        #map { position: absolute; top: 0; bottom: 0; width: 100%; height: 100%; }
+        .marker-title {
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <script>
+        mapboxgl.accessToken = 'pk.eyJ1IjoiZnJlZWZyZWU2MCIsImEiOiJjbHdyZ2hlamwwMGczMmlzYXJiem9oaHFxIn0.bp_4Do2mZmVjZwkDxlWmfw';
+
+        // Function to initialize the map with given data
+        function initializeMap(data) {
+            if (!data || data.length === 0) {
+                console.error('No data available to display on the map.');
+                return;
+            }
+
+            var map = new mapboxgl.Map({
+                container: 'map',
+                style: 'mapbox://styles/mapbox/satellite-v9',
+                center: [data[0].longitude, data[0].latitude],
+                zoom: 10
+            });
+
+            // Adding markers to the map
+            data.forEach(function(item) {
+                var marker = new mapboxgl.Marker()
+                    .setLngLat([item.longitude, item.latitude])
+                    .addTo(map);
+
+                var popup = new mapboxgl.Popup({ offset: 25 })
+                    .setHTML('<div class="marker-title">' + item.name + '</div>');
+
+                marker.setPopup(popup);
+            });
+        }
+
+        // Function to fetch data from a specified URL and category
+        function fetchData(url, category) {
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    let processedData = [];
+
+                    // Check if the data is an array or an object with nested structures
+                    if (Array.isArray(data)) {
+                        processedData = data;
+                    } else if (typeof data === 'object') {
+                        if (category && data[category]) {
+                            processedData = data[category];
+                        } else {
+                            // If no category is specified, extract all nested arrays
+                            Object.keys(data).forEach(key => {
+                                if (Array.isArray(data[key])) {
+                                    processedData = processedData.concat(data[key]);
+                                }
+                            });
+                        }
+                    }
+
+                    initializeMap(processedData);
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        }
+
+        // Extracting URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const firebaseurl = urlParams.get('firebaseurl');
+        const category = urlParams.get('category');
+
+        if (firebaseurl) {
+            fetchData(firebaseurl, category);
+        } else {
+            console.error('API URL is required as a parameter.');
+        }
+    </script>
+</body>
+</html>
