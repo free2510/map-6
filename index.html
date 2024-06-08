@@ -25,7 +25,7 @@
 
         // Function to initialize the map with given data
         function initializeMap(data) {
-            if (!data || data.length === 0) {
+            if (!data || Object.keys(data).length === 0) {
                 console.error('No data available to display on the map.');
                 return;
             }
@@ -33,18 +33,19 @@
             var map = new mapboxgl.Map({
                 container: 'map',
                 style: 'mapbox://styles/mapbox/satellite-v9',
-                center: [data[0].longitude, data[0].latitude],
+                center: [data.spot1.longitude, data.spot1.latitude],
                 zoom: 10
             });
 
             // Adding markers to the map
-            data.forEach(function(item) {
+            Object.keys(data).forEach(function(key) {
+                var spot = data[key];
                 var marker = new mapboxgl.Marker()
-                    .setLngLat([item.longitude, item.latitude])
+                    .setLngLat([spot.longitude, spot.latitude])
                     .addTo(map);
 
                 var popup = new mapboxgl.Popup({ offset: 25 })
-                    .setHTML('<div class="marker-title">' + item.name + '</div>');
+                    .setHTML('<div class="marker-title">' + spot.name + '</div>');
 
                 marker.setPopup(popup);
             });
@@ -55,25 +56,7 @@
             fetch(url)
                 .then(response => response.json())
                 .then(data => {
-                    let processedData = [];
-
-                    // Check if the data is an array or an object with nested structures
-                    if (Array.isArray(data)) {
-                        processedData = data;
-                    } else if (typeof data === 'object') {
-                        if (category && data[category]) {
-                            processedData = data[category];
-                        } else {
-                            // If no category is specified, extract all nested arrays
-                            Object.keys(data).forEach(key => {
-                                if (Array.isArray(data[key])) {
-                                    processedData = processedData.concat(data[key]);
-                                }
-                            });
-                        }
-                    }
-
-                    initializeMap(processedData);
+                    initializeMap(data);
                 })
                 .catch(error => console.error('Error fetching data:', error));
         }
@@ -86,7 +69,7 @@
         if (firebaseurl) {
             fetchData(firebaseurl, category);
         } else {
-            console.error('API URL is required as a parameter.');
+            console.error('Firebase URL is required as a parameter.');
         }
     </script>
 </body>
