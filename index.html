@@ -78,6 +78,7 @@
         // Extracting URL parameters
         const urlParams = new URLSearchParams(window.location.search);
         const firebaseurl = urlParams.get('firebaseurl');
+        const category = urlParams.get('category');
 
         if (firebaseurl) {
             fetchData(firebaseurl);
