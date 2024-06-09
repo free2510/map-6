@@ -60,7 +60,15 @@
                         addMarker(item);
                     });
                 } else {
-                    addMarker(data[key]);
+                    if (data[key].locations) {
+                        Object.keys(data[key].locations).forEach(function(locKey) {
+                            data[key].locations[locKey].forEach(function(item) {
+                                addMarker(item);
+                            });
+                        });
+                    } else {
+                        console.error('Invalid data structure - missing locations.');
+                    }
                 }
             });
 
