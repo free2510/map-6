@@ -49,8 +49,6 @@
             });
 
             function addMarker(item) {
-                if (item.occupied === 1) return; // Skip if the spot is occupied
-
                 if (!item.latitude || !item.longitude) {
                     console.error('Invalid data - latitude or longitude missing.');
                     return;
@@ -72,21 +70,18 @@
             fetch(url)
                 .then(response => response.json())
                 .then(data => {
-                    if (category) {
-                        if (data[category]) {
-                            initializeMap(data[category]);
+                    if (data.locations) {
+                        if (category) {
+                            if (data.locations[category]) {
+                                initializeMap(data.locations[category]);
+                            } else {
+                                console.error('Category not found in data.');
+                            }
                         } else {
-                            console.error('Category not found in data.');
+                            initializeMap(data.locations);
                         }
                     } else {
-                        // If no category is provided, assume locations.json contains all categories
-                        const allLocations = Object.values(data).reduce((acc, curr) => {
-                            if (Array.isArray(curr)) {
-                                acc = acc.concat(curr);
-                            }
-                            return acc;
-                        }, []);
-                        initializeMap(allLocations);
+                        console.error('No "locations" key found in data.');
                     }
                 })
                 .catch(error => console.error('Error fetching data:', error));
@@ -97,10 +92,10 @@
         const firebaseurl = urlParams.get('firebaseurl');
         const category = urlParams.get('category');
 
-        if (firebaseurl) {
+        if (firebaseurl && firebaseurl.includes('locations.json')) {
             fetchData(firebaseurl, category);
         } else {
-            console.error('Firebase URL is required as a parameter.');
+            console.error('Firebase URL containing "locations.json" is required as a parameter.');
         }
     </script>
 </body>
