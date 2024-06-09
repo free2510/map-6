@@ -72,18 +72,21 @@
             fetch(url)
                 .then(response => response.json())
                 .then(data => {
-                    if (data.locations) {
-                        if (category) {
-                            if (data.locations[category]) {
-                                initializeMap(data.locations[category]);
-                            } else {
-                                console.error('Category not found in data.');
-                            }
+                    if (category) {
+                        if (data[category]) {
+                            initializeMap(data[category]);
                         } else {
-                            initializeMap(data.locations);
+                            console.error('Category not found in data.');
                         }
                     } else {
-                        console.error('No "locations" key found in data.');
+                        // If no category is provided, assume locations.json contains all categories
+                        const allLocations = Object.values(data).reduce((acc, curr) => {
+                            if (Array.isArray(curr)) {
+                                acc = acc.concat(curr);
+                            }
+                            return acc;
+                        }, []);
+                        initializeMap(allLocations);
                     }
                 })
                 .catch(error => console.error('Error fetching data:', error));
