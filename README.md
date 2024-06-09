@@ -1,86 +1,32 @@
+# Dynamic Data Map - GitHub Repository
 
-# Dynamic Data Map
+This repository contains code for creating a dynamic data map using Mapbox and fetching data from a Firebase URL. Below are the details of the parameters and URL examples used in the project:
 
-This project provides a dynamic map display based on data fetched from a Firebase Realtime Database. It supports two shapes of data and allows specifying a category for display.
+## Parameters
 
-## Usage Examples
+### firebaseurl
+- **Description**: Specifies the URL of the Firebase database containing the location data.
+- **Type**: String
+- **Example**: `firebaseurl=https://your-firebase-url.firebaseio.com/locations.json?auth=your-auth-token`
 
-### Without Category Parameter
+### category
+- **Description**: (Optional) Specifies the category of locations to display on the map.
+- **Type**: String
+- **Example**: `category=pharmacy`
 
-Directly fetch and display all spots from a specified URL:
+## URL Examples
 
-```
-https://free2510.github.io/map-6/index.html?firebaseurl=https://smart-vilage-default-rtdb.firebaseio.com/parking_spots.json?auth=AIzaSyCSMlIol-7KSVR22X7WS6uceayDyNZM3bM
-```
+### Fetch All Locations
+To fetch and display all locations on the map, simply provide the `firebaseurl` parameter without the `category` parameter:
 
-### With Category Parameter
+https://free2510.github.io/map-6/index.html?firebaseurl=https://smart-vilage-default-rtdb.firebaseio.com/locations.json?auth=AIzaSyCSMlIol-7KSVR22X7WS6uceayDyNZM3bM
 
-Fetch and display only the specified category:
 
-```
+### Fetch Specific Category
+To fetch and display locations of a specific category (e.g., "pharmacy" or "police_station"), provide both the `firebaseurl` and `category` parameters:
+
 https://free2510.github.io/map-6/index.html?firebaseurl=https://smart-vilage-default-rtdb.firebaseio.com/locations.json?auth=AIzaSyCSMlIol-7KSVR22X7WS6uceayDyNZM3bM&category=pharmacy
-```
 
-## Supported Data Shapes
 
-### Shape 1: Category-based Structure
-
-```json
-{
-  "pharmacy": [
-    {
-      "address": "123 St",
-      "latitude": 27.272295445302337,
-      "longitude": 31.265541752111393,
-      "name": "البريد المصري"
-    },
-    {
-      "address": "456 St",
-      "latitude": 27.270229574912683,
-      "longitude": 31.265317035363662,
-      "name": "مصنع شركة سسكو"
-    }
-  ],
-  "police_station": [
-    {
-      "address": "789 Oak St",
-      "latitude": 27.27157798672489,
-      "longitude": 31.26747356958013,
-      "name": "قسم اول"
-    }
-  ]
-}
-```
-
-### Shape 2: Individual Spot Entries with Occupied Status
-
-```json
-{
-  "spot1": {
-    "latitude": 27.2711300032348,
-    "longitude": 31.2625760003178,
-    "name": "Parking Spot 1",
-    "occupied": 1
-  },
-  "spot10": {
-    "latitude": 27.2711046348404,
-    "longitude": 31.2626934441832,
-    "name": "Parking Spot 10",
-    "occupied": 0
-  },
-  "spot11": {
-    "latitude": 27.2710700657154,
-    "longitude": 31.2627551349869,
-    "name": "Parking Spot 11",
-    "occupied": 0
-  }
-}
-```
-
-## Key Features
-
-- **Dynamic Display**: Fetches and displays data dynamically from a Firebase Realtime Database.
-- **Category Support**: Supports fetching and displaying data for specific categories.
-- **Marker Filtering**: Skips spots with an `occupied` status of `1` to not display them on the map.
-
-Feel free to use and customize this project according to your needs!
+## About
+This project utilizes Mapbox for map visualization and fetches location data from a Firebase database. It provides a dynamic mapping solution that can be customized to display different categories of locations based on the provided parameters in the URL.
