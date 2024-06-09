@@ -42,6 +42,10 @@
                     data[category].forEach(function(item) {
                         addMarker(item);
                     });
+                } else if (typeof data[category] === 'object' && !Array.isArray(data[category])) {
+                    Object.keys(data[category]).forEach(function(subKey) {
+                        addMarker(data[category][subKey]);
+                    });
                 } else {
                     addMarker(data[category]);
                 }
@@ -50,6 +54,10 @@
             map.fitBounds(bounds, { padding: 20 });
 
             function addMarker(item) {
+                if (item.hasOwnProperty('occupied') && item.occupied === 1) {
+                    return;
+                }
+
                 if (!item.latitude || !item.longitude) {
                     console.error('Invalid data - latitude or longitude missing.');
                     return;
