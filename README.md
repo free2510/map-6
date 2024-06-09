@@ -1,84 +1,86 @@
-# Dynamic Map with Firebase Data
 
-This project leverages the Mapbox GL JS library to dynamically display data on a map fetched from a Firebase Realtime Database. By passing URL parameters, you can specify the data source and the category of data to visualize on the map.
+# Dynamic Data Map
 
-## Features
+This project provides a dynamic map display based on data fetched from a Firebase Realtime Database. It supports two shapes of data and allows specifying a category for display.
 
-- **Dynamic Data Fetching**: Retrieve data from any Firebase Realtime Database endpoint.
-- **Flexible JSON Handling**: Support for both flat and nested JSON data structures.
-- **Customizable Map**: Interactive map with customizable markers and popups using Mapbox GL JS.
-- **URL Parameter Configuration**: Easily configure the data source and category through URL parameters.
+## Usage Examples
 
-## Usage
+### Without Category Parameter
 
-### URL Parameters
+Directly fetch and display all spots from a specified URL:
 
-To customize the data displayed on the map, use the following URL parameters:
+```
+https://free2510.github.io/map-6/index.html?firebaseurl=https://smart-vilage-default-rtdb.firebaseio.com/parking_spots.json?auth=AIzaSyCSMlIol-7KSVR22X7WS6uceayDyNZM3bM
+```
 
-- `firebaseurl`: The URL of the Firebase Realtime Database JSON endpoint.
-- `category`: (Optional) The specific category within the JSON data to extract and display.
+### With Category Parameter
 
-### Example URLs
+Fetch and display only the specified category:
 
-1. **Pharmacies Data**:
-   - Fetches and displays data from the `pharmacy` category.
-   - URL:
-     ```
-     https://free2510.github.io/map-6/index.html?firebaseurl=https://smart-vilage-default-rtdb.firebaseio.com/locations/pharmacy.json?auth=AIzaSyCSMlIol-7KSVR22X7WS6uceayDyNZM3bM&category=pharmacy
-     ```
-   - **Description**: This URL fetches information about pharmacies from the specified Firebase endpoint and displays it on the map.
+```
+https://free2510.github.io/map-6/index.html?firebaseurl=https://smart-vilage-default-rtdb.firebaseio.com/locations.json?auth=AIzaSyCSMlIol-7KSVR22X7WS6uceayDyNZM3bM&category=pharmacy
+```
 
-2. **Police Stations Data**:
-   - Fetches and displays data from the `police_station` category.
-   - URL:
-     ```
-     https://free2510.github.io/map-6/index.html?firebaseurl=https://smart-vilage-default-rtdb.firebaseio.com/locations/pharmacy.json?auth=AIzaSyCSMlIol-7KSVR22X7WS6uceayDyNZM3bM&category=police_station
-     ```
-   - **Description**: This URL fetches information about police stations from the same Firebase endpoint and displays it on the map.
+## Supported Data Shapes
 
-3. **All Categories Data**:
-   - Fetches and displays data from all available categories within the JSON.
-   - URL:
-     ```
-     https://free2510.github.io/map-6/index.html?firebaseurl=https://smart-vilage-default-rtdb.firebaseio.com/locations/pharmacy.json?auth=AIzaSyCSMlIol-7KSVR22X7WS6uceayDyNZM3bM
-     ```
-   - **Description**: This URL fetches and displays data from all nested categories available in the specified JSON file.
+### Shape 1: Category-based Structure
 
-### How to Use
+```json
+{
+  "pharmacy": [
+    {
+      "address": "123 St",
+      "latitude": 27.272295445302337,
+      "longitude": 31.265541752111393,
+      "name": "البريد المصري"
+    },
+    {
+      "address": "456 St",
+      "latitude": 27.270229574912683,
+      "longitude": 31.265317035363662,
+      "name": "مصنع شركة سسكو"
+    }
+  ],
+  "police_station": [
+    {
+      "address": "789 Oak St",
+      "latitude": 27.27157798672489,
+      "longitude": 31.26747356958013,
+      "name": "قسم اول"
+    }
+  ]
+}
+```
 
-1. Replace `YOUR_FIREBASE_URL` with the actual Firebase Realtime Database JSON endpoint URL.
-2. Replace `YOUR_CATEGORY` with the specific category name if you want to filter the data (optional).
-3. Open the constructed URL in a web browser.
+### Shape 2: Individual Spot Entries with Occupied Status
 
-### Notes
+```json
+{
+  "spot1": {
+    "latitude": 27.2711300032348,
+    "longitude": 31.2625760003178,
+    "name": "Parking Spot 1",
+    "occupied": 1
+  },
+  "spot10": {
+    "latitude": 27.2711046348404,
+    "longitude": 31.2626934441832,
+    "name": "Parking Spot 10",
+    "occupied": 0
+  },
+  "spot11": {
+    "latitude": 27.2710700657154,
+    "longitude": 31.2627551349869,
+    "name": "Parking Spot 11",
+    "occupied": 0
+  }
+}
+```
 
-- Ensure the `firebaseurl` parameter is properly URL-encoded if it contains special characters like `&` or `?`.
-- If no `category` is specified, all available categories in the JSON will be displayed.
+## Key Features
 
-## Dependencies
+- **Dynamic Display**: Fetches and displays data dynamically from a Firebase Realtime Database.
+- **Category Support**: Supports fetching and displaying data for specific categories.
+- **Marker Filtering**: Skips spots with an `occupied` status of `1` to not display them on the map.
 
-- [Mapbox GL JS](https://www.mapbox.com/mapbox-gl-js)
-- A valid Mapbox access token, which can be obtained from your [Mapbox account](https://account.mapbox.com/).
-
-## Example Map URLs
-
-- **Pharmacies Map**: [View Pharmacies](https://free2510.github.io/map-6/index.html?firebaseurl=https://smart-vilage-default-rtdb.firebaseio.com/locations/pharmacy.json?auth=AIzaSyCSMlIol-7KSVR22X7WS6uceayDyNZM3bM&category=pharmacy)
-- **Police Stations Map**: [View Police Stations](https://free2510.github.io/map-6/index.html?firebaseurl=https://smart-vilage-default-rtdb.firebaseio.com/locations/pharmacy.json?auth=AIzaSyCSMlIol-7KSVR22X7WS6uceayDyNZM3bM&category=police_station)
-- **All Categories Map**: [View All Categories](https://free2510.github.io/map-6/index.html?firebaseurl=https://smart-vilage-default-rtdb.firebaseio.com/locations/pharmacy.json?auth=AIzaSyCSMlIol-7KSVR22X7WS6uceayDyNZM3bM)
-
-## Project Setup
-
-1. Clone or download the project repository.
-2. Open the `index.html` file in your preferred web browser or host it on a web server.
-
-## License
-
-This project is open-source and available under the [MIT License](LICENSE).
-
-## Contributions
-
-Contributions are welcome! Feel free to submit a pull request or open an issue for any improvements or bug fixes.
-
----
-
-By: [Your Name or Organization]
+Feel free to use and customize this project according to your needs!
