@@ -88,12 +88,8 @@
             fetch(url)
                 .then(response => response.json())
                 .then(data => {
-                    if (category) {
-                        if (data[category]) {
-                            initializeMap(data[category]);
-                        } else {
-                            console.error('Category not found in data.');
-                        }
+                    if (category && data[category]) {
+                        initializeMap(data[category]);
                     } else {
                         initializeMap(data);
                     }
