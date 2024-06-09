@@ -70,18 +70,20 @@
             fetch(url)
                 .then(response => response.json())
                 .then(data => {
-                    if (data.locations) {
+                    if (url.includes('locations.json')) {
+                        Object.keys(data).forEach(function(key) {
+                            initializeMap(data[key]);
+                        });
+                    } else {
                         if (category) {
-                            if (data.locations[category]) {
-                                initializeMap(data.locations[category]);
+                            if (data[category]) {
+                                initializeMap(data[category]);
                             } else {
                                 console.error('Category not found in data.');
                             }
                         } else {
-                            initializeMap(data.locations);
+                            initializeMap(data);
                         }
-                    } else {
-                        console.error('No "locations" key found in data.');
                     }
                 })
                 .catch(error => console.error('Error fetching data:', error));
@@ -92,10 +94,10 @@
         const firebaseurl = urlParams.get('firebaseurl');
         const category = urlParams.get('category');
 
-        if (firebaseurl && firebaseurl.includes('locations.json')) {
+        if (firebaseurl) {
             fetchData(firebaseurl, category);
         } else {
-            console.error('Firebase URL containing "locations.json" is required as a parameter.');
+            console.error('Firebase URL is required as a parameter.');
         }
     </script>
 </body>
