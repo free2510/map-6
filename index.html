@@ -30,11 +30,27 @@
                 return;
             }
 
+            // Extract the first valid location to set the initial map center
+            let firstLocation = null;
+            Object.keys(data).some(function(key) {
+                if (Array.isArray(data[key])) {
+                    firstLocation = data[key][0];
+                } else if (data[key].latitude && data[key].longitude && data[key].occupied === 0) {
+                    firstLocation = data[key];
+                }
+                return firstLocation;
+            });
+
+            if (!firstLocation) {
+                console.error('No valid data found to set map center.');
+                return;
+            }
+
             var map = new mapboxgl.Map({
                 container: 'map',
                 style: 'mapbox://styles/mapbox/satellite-v9',
-                center: [Object.values(data)[0].longitude, Object.values(data)[0].latitude],
-                zoom: 10
+                center: [firstLocation.longitude, firstLocation.latitude],
+                zoom: 13
             });
 
             // Adding markers to the map
@@ -49,6 +65,8 @@
             });
 
             function addMarker(item) {
+                if (item.occupied === 1) return; // Skip if the spot is occupied
+
                 if (!item.latitude || !item.longitude) {
                     console.error('Invalid data - latitude or longitude missing.');
                     return;
