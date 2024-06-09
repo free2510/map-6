@@ -71,19 +71,19 @@
                 .then(response => response.json())
                 .then(data => {
                     if (url.includes('locations.json')) {
-                        Object.keys(data).forEach(function(key) {
-                            initializeMap(data[key]);
-                        });
-                    } else {
-                        if (category) {
-                            if (data[category]) {
-                                initializeMap(data[category]);
-                            } else {
-                                console.error('Category not found in data.');
-                            }
-                        } else {
+                        if (Object.keys(data).length > 0) {
                             initializeMap(data);
+                        } else {
+                            console.error('No data found in locations.json.');
                         }
+                    } else if (category) {
+                        if (data[category]) {
+                            initializeMap(data[category]);
+                        } else {
+                            console.error('Category not found in data.');
+                        }
+                    } else {
+                        console.error('Invalid URL or missing category.');
                     }
                 })
                 .catch(error => console.error('Error fetching data:', error));
