@@ -60,15 +60,7 @@
                         addMarker(item);
                     });
                 } else {
-                    if (data[key].locations) {
-                        Object.keys(data[key].locations).forEach(function(locKey) {
-                            data[key].locations[locKey].forEach(function(item) {
-                                addMarker(item);
-                            });
-                        });
-                    } else {
-                        console.error('Invalid data structure - missing locations.');
-                    }
+                    addMarker(data[key]);
                 }
             });
 
@@ -96,10 +88,14 @@
             fetch(url)
                 .then(response => response.json())
                 .then(data => {
-                    if (category && data[category]) {
-                        initializeMap(data[category]);
+                    if (data.locations) {
+                        if (category && data.locations[category]) {
+                            initializeMap(data.locations[category]);
+                        } else {
+                            console.error('Category not found in data.');
+                        }
                     } else {
-                        initializeMap(data);
+                        console.error('No "locations" key found in data.');
                     }
                 })
                 .catch(error => console.error('Error fetching data:', error));
