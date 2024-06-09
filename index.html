@@ -84,18 +84,19 @@
         }
 
         // Function to fetch data from a specified URL
-        function fetchData(url, category) {
-            fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    if (category && data[category]) {
-                        initializeMap(data[category]);
-                    } else {
-                        initializeMap(data);
-                    }
-                })
-                .catch(error => console.error('Error fetching data:', error));
-        }
+function fetchData(url, category) {
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            if (category && data[category]) { // Ensure category exists in data
+                initializeMap(data[category]);
+            } else {
+                console.error('Category not found in data or category parameter missing.');
+            }
+        })
+        .catch(error => console.error('Error fetching data:', error));
+}
+
 
         // Extracting URL parameters
         const urlParams = new URLSearchParams(window.location.search);
