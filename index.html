@@ -49,6 +49,8 @@
             });
 
             function addMarker(item) {
+                if (item.occupied === 1) return; // Skip if the spot is occupied
+
                 if (!item.latitude || !item.longitude) {
                     console.error('Invalid data - latitude or longitude missing.');
                     return;
@@ -70,20 +72,14 @@
             fetch(url)
                 .then(response => response.json())
                 .then(data => {
-                    if (url.includes('locations.json')) {
-                        if (Object.keys(data).length > 0) {
-                            initializeMap(data);
-                        } else {
-                            console.error('No data found in locations.json.');
-                        }
-                    } else if (category) {
+                    if (category) {
                         if (data[category]) {
                             initializeMap(data[category]);
                         } else {
                             console.error('Category not found in data.');
                         }
                     } else {
-                        console.error('Invalid URL or missing category.');
+                        initializeMap(data);
                     }
                 })
                 .catch(error => console.error('Error fetching data:', error));
