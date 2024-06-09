@@ -23,30 +23,31 @@
     <script>
         mapboxgl.accessToken = 'pk.eyJ1IjoiZnJlZWZyZWU2MCIsImEiOiJjbHdyZ2hlamwwMGczMmlzYXJiem9oaHFxIn0.bp_4Do2mZmVjZwkDxlWmfw';
 
-        // Function to initialize the map with given data
         function initializeMap(data) {
             if (!data || Object.keys(data).length === 0) {
                 console.error('No data available to display on the map.');
                 return;
             }
 
+            var bounds = new mapboxgl.LngLatBounds();
             var map = new mapboxgl.Map({
                 container: 'map',
                 style: 'mapbox://styles/mapbox/satellite-v9',
-                center: [Object.values(data)[0].longitude, Object.values(data)[0].latitude],
+                center: [31.265541752111393, 27.272295445302337], // Default center
                 zoom: 10
             });
 
-            // Adding markers to the map
-            Object.keys(data).forEach(function(key) {
-                if (Array.isArray(data[key])) {
-                    data[key].forEach(function(item) {
+            Object.keys(data).forEach(function(category) {
+                if (Array.isArray(data[category])) {
+                    data[category].forEach(function(item) {
                         addMarker(item);
                     });
                 } else {
-                    addMarker(data[key]);
+                    addMarker(data[category]);
                 }
             });
+
+            map.fitBounds(bounds, { padding: 20 });
 
             function addMarker(item) {
                 if (!item.latitude || !item.longitude) {
@@ -62,17 +63,18 @@
                     .setHTML('<div class="marker-title">' + (item.name || '') + '</div>');
 
                 marker.setPopup(popup);
+
+                bounds.extend([item.longitude, item.latitude]);
             }
         }
 
-        // Function to fetch data from a specified URL
         function fetchData(url, category) {
             fetch(url)
                 .then(response => response.json())
                 .then(data => {
                     if (category) {
                         if (data[category]) {
-                            initializeMap(data[category]);
+                            initializeMap({ [category]: data[category] });
                         } else {
                             console.error('Category not found in data.');
                         }
@@ -83,7 +85,6 @@
                 .catch(error => console.error('Error fetching data:', error));
         }
 
-        // Extracting URL parameters
         const urlParams = new URLSearchParams(window.location.search);
         const firebaseurl = urlParams.get('firebaseurl');
         const category = urlParams.get('category');
